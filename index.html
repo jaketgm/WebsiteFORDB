@@ -1,0 +1,412 @@
+<!------------------------------------------------------------------------------------
+-- This Program is responsible for making a website that is connected to a 
+-- database called UNBDB. This website allows the user to traverse UNBDB, insert
+-- information into UNBDB, delete information from UNBDB, and even Manipulate
+-- information from UNBDB.
+------------------------------------------------------------------------------------->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>DBFinal</title>
+        <style>
+            body 
+            {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                /* overflow: hidden; */
+                background: #F1F2B5; /* fallback for old browsers */
+                background: -webkit-linear-gradient(
+                    to right,
+                    #135058,
+                    #F1F2B5
+                ); /* Chrome 10-25, Safari 5.1-6 */
+                background: linear-gradient(
+                    to right,
+                    #135058,
+                    #F1F2B5
+                ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+                overflow-y: scroll;
+            }
+
+            h1 
+            {
+                text-align: center;
+                margin-top: 50px;
+            }
+
+            form 
+            {
+                text-align: center;
+                margin-top: 50px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            label 
+            {
+                font-size: 18px;
+                font-weight: bold;
+                color: wheat;
+                text-transform: uppercase;
+                text-decoration: wavy;
+                margin-right: 10px;
+            }
+
+            input[type="text"] 
+            {
+                padding: 10px;
+                font-size: 16px;
+                border-radius: 5px;
+                border: none;
+                box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+                margin-right: 10px;
+            }
+
+            button 
+            {
+                padding: 10px;
+                font-size: 16px;
+                border-radius: 5px;
+                border: none;
+                background-color: #4CAF50;
+                color: white;
+                box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+                cursor: pointer;
+            }
+
+            table 
+            {
+                margin: 50px auto;
+                border-collapse: collapse;
+                width: 50%;
+                border: 1px solid #ddd;
+                font-size: 18px;
+            }
+
+            th,
+            td 
+            {
+                text-align: left;
+                padding: 12px;
+            }
+
+            th 
+            {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+            tr:nth-child(even) 
+            {
+                background-color: #f2f2f2;
+            }
+
+            .container 
+            {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+                margin: 25px auto;
+                width: 50%;
+                text-align: center;
+            }
+
+            .search-container 
+            {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 50px;
+            }
+
+            nav 
+            {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0px 40px;
+                background: #d9da9f; /* fallback for old browsers */
+                background: -webkit-linear-gradient(
+                    to right,
+                    #0f474f,
+                    #e5e6a2
+                ); /* Chrome 10-25, Safari 5.1-6 */
+                background: linear-gradient(
+                    to right,
+                    #0d4148,
+                    #e0e19a
+                ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+                position: fixed;
+                top: 0;
+                right: 0;
+                left: 0;
+                z-index: 9999;
+            }
+
+            nav .logo 
+            {
+                font-size: 30px;
+                text-decoration: none;
+                color: rgb(205, 200, 200);
+                padding: 10px;
+            }
+
+            .hamburger-menu 
+            {
+                position: relative;
+                width: 30px;
+                height: 22.5px;
+                cursor: pointer;
+                margin-right: 10px;
+            }
+
+            .hamburger-menu span 
+            {
+                position: absolute;
+                width: 100%;
+                height: 3px;
+                background-color: black;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .hamburger-menu span:nth-child(1) 
+            {
+                top: 0;
+            }
+
+            .hamburger-menu span:nth-child(2) 
+            {
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .hamburger-menu span:nth-child(3) 
+            {
+                bottom: 0;
+            }
+
+            .menu 
+            {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: white;
+                border-radius: 5px;
+                box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+                display: none;
+                padding: 10px;
+                margin-top: 5px;
+                margin-right: 20px;
+            }
+
+            .menu.active 
+            {
+                display: block;
+            }
+
+            .menu a 
+            {
+                display: block;
+                padding: 10px;
+                /* padding-left: 20px; */
+                font-size: 16px;
+                text-align: center;
+                text-decoration: none;
+                color: black;
+                margin-right: 20px;
+            }
+
+            .menu a:hover 
+            {
+                background-color: #f2f2f2;
+            }
+
+            .insert-container 
+            {
+                background-color: rgba(122, 146, 115, 0.259);
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+                margin: 25px auto;
+                margin-top: 3px;
+                width: 50%;
+                text-align: center;
+                gap: 5px;
+            }
+
+            .delete-container 
+            {
+                background-color: rgba(122, 146, 115, 0.259);
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+                margin: 25px auto;
+                margin-top: 3px;
+                width: 50%;
+                text-align: center;
+                gap: 5px;
+            }
+
+            .modify-container 
+            {
+                background-color: rgba(122, 146, 115, 0.259);
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+                margin: 25px auto;
+                margin-top: 3px;
+                width: 75%;
+                text-align: center;
+                gap: 5px;
+            }
+
+            .popup 
+            {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+            }
+
+            .popup-content 
+            {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #fff;
+                padding: 20px;
+                text-align: center;
+                width: 80%;
+                max-width: 600px;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <a href="#" class="logo">Simple</a>
+            <div class="hamburger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="menu">
+                <a href="#" id="info-link">Info</a>
+            </div>
+        </nav>
+        <script>
+            function toggleMenu()
+            {
+                const menu = document.querySelector('.menu');
+                menu.classList.toggle('active');
+            }
+        </script>
+
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <h2>Information</h2>
+                <p>
+                    <b>For Inserting:</b> In the table text-field, make sure you
+                    type in the actual name of the table with all capitalization
+                    being synonymous to that of the actual table name. For the
+                    text field corresponding to column names, type in the
+                    columns correpsonding to the table in the form col1, col2,
+                    col3. Lastly, for the text field corresponding to Values,
+                    type in what you want to insert for each column. I.e. 17,
+                    'Chem', 'Floor 1'. Also make sure to write the quotes if the
+                    input is a string.
+                </p>
+                <p>
+                    <b>For Deleting:</b> In the text field corresponding to
+                    Table name, you simply input the table name in exact form.
+                    For the text field Where, you simply put what row you wish
+                    to delete. I.e. dept_id=1. Would delete the row
+                    corresponding to dept_id=1.
+                </p>
+                <p>
+                    <b>For Modify:</b> In the text field corresponding to Table
+                    name, you simply input the table name in exact form. For the
+                    text field Set, you simply put the new data you wish to set
+                    in correspondance to the column. E.g. dept_name='bio-chem'.
+                    For the text field corresponding to Where, you just put the
+                    desired row you want to modify. E.g. dept_id=1. Would modify
+                    dept_name for the row corresponding to dept_id=1.
+                </p>
+            </div>
+        </div>
+        <script>
+            const infoLink = document.getElementById('info-link');
+            const popup = document.getElementById('popup');
+
+            infoLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                popup.style.display = 'block';
+            });
+
+            popup.addEventListener('click', function() {
+                popup.style.display = 'none';
+            });
+        </script>
+
+        <div class="container">
+            <h1>Welcome to the DB!</h1>
+        </div>
+        <div class="insert-container">
+            <label for="table-name">Table name:</label>
+            <input type="text" id="table-name" />
+            <label for="column-names">Column names:</label>
+            <input type="text" id="column-names" />
+            <label for="values" autocomplete="off">Values:</label>
+            <input type="text" id="values" />
+            <button id="insert-button">Insert</button>
+        </div>
+        <div class="delete-container">
+            <label for="table-name-delete">Table name:</label>
+            <input type="text" id="table-name-delete" />
+            <label for="where-clause">Where:</label>
+            <input type="text" id="where-clause" />
+            <button id="delete-button">Delete</button>
+        </div>
+        <div class="modify-container">
+            <label for="table-name-modify">Table name:</label>
+            <input type="text" id="table-name-modify" />
+            <label for="set-clause">Set:</label>
+            <input type="text" id="set-clause" />
+            <label for="where-clause-modify">Where:</label>
+            <input type="text" id="where-clause-modify" />
+            <button id="modify-button">Modify</button>
+        </div>
+
+        <div class="search-container">
+            <label for="inputtedSearch">Search Table Name:</label>
+            <input type="text" id="inputtedSearch" />
+            <button id="buttonSearch">Search</button>
+        </div>
+        <table id="resultantTable"></table>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="index.js"></script>
+    </body>
+</html>
